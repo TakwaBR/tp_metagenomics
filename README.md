@@ -1,38 +1,56 @@
-# Calcul des OTU 
-
-Vous trouverez la description complète du TP [ici](https://docs.google.com/document/d/1qWNqPZ9Ecd-yZ5Hpl6n2zd7ZGtHPjf3yaW1ulKRdWnk/edit?usp=sharing).
+# OTU Clustering
 
 ## Introduction
 
-L’objectif de ce TP sera de calculer les OTU obtenues à partir d’un séquençage “mock”. Nous n’avons amplifié que les bactéries (et non les champignons). 8 espèces sont ainsi attendues.
+This Python script performs OTU (Operational Taxonomic Units) clustering from DNA sequence data, using deduplication and alignment methods. It identifies representative OTU sequences from an amplicon dataset based on their abundance and similarity.
 
-Vous devrez développer un programme effectuant une dé-duplication en séquence complète (“dereplication full length”), une recherche des séquences chimériques et un regroupement basé sur un algorithme glouton (“Abundance Greedy Clustering”).  
+## Author
+Takwa Ben Radhia
 
+## Description
+The script performs the following tasks:
 
-## Installation des dépendances
+1. Reading and Filtering Sequences: Reads a compressed FASTA file containing amplicon DNA sequences and filters those that meet length and abundance criteria.
+2. Dereplication and Counting: Groups identical sequences and counts their frequency.
+3. Greedy Abundance Clustering: Uses a greedy clustering method based on sequence abundance and identity to identify OTUs.
+4. Writing OTU Sequences: Saves the identified OTU sequences to an output file in FASTA format.
 
-Vous utiliserez les librairies nwalign3, pytest et pylint de Python:
+## Dependencies
+- Python 3
+- nwalign3: A library for global sequence alignment
+- Alignment matrix file for nwalign3 (e.g., BLOSUM or MATCH)
+
+## Usage
+Running the Program
+To run the script, use the following command while specifying the required arguments:
+
+```bash
+python3 script.py -i <amplicon_file> -s <minseqlen> -m <mincount> -o <output_file>
 ```
-pip3 install --user nwalign3 pytest pylint pytest-cov
+
+## Arguments
+- -i, --amplicon_file: The compressed amplicon file in .fasta.gz format (required).
+- -s, --minseqlen: The minimum sequence length for dereplication (default: 400).
+- -m, --mincount: The minimum occurrence count for dereplication (default: 10).
+- -o, --output_file: The output file where the OTU sequences will be saved (default: OTU.fasta).
+
+## Example Command
+```bash
+python3 script.py -i example_amplicon.fasta.gz -s 400 -m 10 -o OTU_output.fasta
 ```
+## Main Functions
+1. isfile(path): Checks if the provided path is an existing file.
+2. get_arguments(): Parses command-line arguments and returns an argument object.
+3. read_fasta(amplicon_file, minseqlen): Reads a compressed FASTA file and extracts sequences that meet the minimum length requirement.
+4. dereplication_fulllength(amplicon_file, minseqlen, mincount): Dereplicates sequences and counts their occurrences.
+5. get_identity(alignment_list): Computes the identity rate between two aligned sequences.
+6. abundance_greedy_clustering(amplicon_file, minseqlen, mincount, chunk_size, kmer_size): Performs greedy clustering based on sequence abundance and identity to identify OTUs.
+7. write_OTU(OTU_list, output_file): Writes the identified OTU sequences to an output FASTA file.
 
-## Utilisation
-
-Vous devrez développer un programme python3 effectuant une dé-duplication en séquence complète (“dereplication full length”), une recherche des séquences chimériques et un regroupement basé sur un algorithme glouton (“Abundance Greedy Clustering”). Il prendra pour arguments:
-
- -i, -amplicon_file fichier contenant des séquences au format FASTA
- -s, -minseqlen Longueur minimum des séquences (optionnel - valeur par défaut 400)
- -m, -mincount Comptage minimum des séquences (optionnel - valeur par défaut 10)
- -c, -chunk_size Taille des partitions de séquence (optionnel - valeur par défaut 100)
- -k, -kmer_size Longueur des “kmer” (optionnel - valeur par défaut 8)
- -o, -output_file fichier de sortie avec les OTU au format FASTA
-
- ## Tests
-
-Vous testerez vos fonctions à l’aide de la commande pytest --cov=agc à exécuter dans le dossier agc-tp/. En raison de cette contrainte, les noms des fonctions ne seront pas libre. Il sera donc impératif de respecter le nom des fonctions “imposées”, de même que leur caractéristique et paramètres. 
-Vous vérifierez également la qualité syntaxique de votre programme en exécutant la commande: pylint agc.py
-
-## Contact
-
-En cas de questions, vous pouvez me contacter par email: amine.ghozlane[at]pasteur.fr
+## Notes
+- The amplicon file must be in .fasta.gz compressed FASTA format.
+- The parameters chunk_size and kmer_size are present but not used in this version of the script.
+- The script uses the MATCH matrix for alignment, which should be available in the same directory as the script.
+## Support
+For any questions, contact: takwa.ben-radhia@etu.u-paris.fr
 
